@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { message } from "antd";
+import { Link } from "react-router-dom";
 
 const SignupForm = () => {
   const [signUpInfo, setSignUpInfo] = useState({
@@ -96,6 +97,12 @@ const SignupForm = () => {
             <Button variant="primary" type="submit" className="w-100 mt-3">
               Sign Up
             </Button>
+            <div className="text-center mt-3">
+              <p>Already Have Account?</p>
+              <Link to="/">
+                <Button variant="outline-primary">Login</Button>
+              </Link>
+            </div>
           </Form>
         </Col>
       </Row>

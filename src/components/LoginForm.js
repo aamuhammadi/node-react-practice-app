@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { message } from "antd";
+import { Link, useNavigate } from "react-router-dom";
+import setAuthToken from "../utils/setAuthToken";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+
   const [loginInfo, setLoginInfo] = useState({
     email: "",
     password: "",
@@ -25,7 +29,13 @@ const LoginForm = () => {
         "http://localhost:8080/api/user/login",
         loginInfo
       );
+      const token = res.data.token;
+      console.log(res);
       message.success(res?.data?.message);
+      setAuthToken(token);
+      localStorage.setItem("token", token);
+
+      navigate("/profile");
       setLoginInfo({
         email: "",
         password: "",
@@ -70,6 +80,12 @@ const LoginForm = () => {
             <Button variant="primary" type="submit" className="w-100 mt-3">
               Login
             </Button>
+            <div className="text-center mt-3">
+              <p>Don't have an account?</p>
+              <Link to="/signup">
+                <Button variant="outline-primary">Sign Up</Button>
+              </Link>
+            </div>
           </Form>
         </Col>
       </Row>
