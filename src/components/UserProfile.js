@@ -2,16 +2,19 @@ import React, { useState, useEffect, useContext } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { AuthContext } from "../context/auth";
 import setAuthToken from "../utils/setAuthToken";
+import axios from "axios";
+import { message } from "antd";
 
 const UserProfile = () => {
-  const { userData, setUserData, fetchUserInfo } = useContext(AuthContext);
+  const { userData, setUserData, fetchUserInfo, logout } =
+    useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (token) {
       setAuthToken(token);
-      fetchUserInfo();
+      fetchUserInfo(token);
     }
   }, []);
 
@@ -19,17 +22,21 @@ const UserProfile = () => {
     setIsEditing(true);
   };
 
-  const handleSaveClick = () => {
-    // Add logic to save the updated user data to the server
-    // Example:
-    // axios.put("http://localhost:8080/api/user/profile", userData)
-    //   .then((res) => {
-    //     message.success(res.data.message);
-    //     setIsEditing(false);
-    //   })
-    //   .catch((err) => {
-    //     message.error(err.response.data.message);
-    //   });
+  const handleSaveClick = async () => {
+    try {
+      if (isEditing) {
+        // Update user profile
+        const res = await axios.put(
+          "http://localhost:8080/api/user/update",
+          userData
+        );
+        message.success(res.data.message);
+      }
+
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -86,22 +93,52 @@ const UserProfile = () => {
               </Form.Text>
             </Form.Group>
 
+            {isEditing && (
+              <Form.Group controlId="formBasicPassword">
+                <Form.Label>New Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Enter your new password"
+                  name="password"
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+            )}
+
             {isEditing ? (
-              <Button
-                variant="primary"
-                className="w-100 mt-3"
-                onClick={handleSaveClick}
-              >
-                Save Changes
-              </Button>
+              <>
+                <Button
+                  variant="primary"
+                  className="w-100 mt-3"
+                  onClick={handleSaveClick}
+                >
+                  Save Changes
+                </Button>
+                <Button
+                  variant="outline-secondary"
+                  className="w-100 mt-3"
+                  onClick={() => setIsEditing(false)}
+                >
+                  Cancel
+                </Button>
+              </>
             ) : (
-              <Button
-                variant="outline-primary"
-                className="w-100 mt-3"
-                onClick={handleEditClick}
-              >
-                Edit Profile
-              </Button>
+              <>
+                <Button
+                  variant="outline-primary"
+                  className="w-100 mt-3"
+                  onClick={handleEditClick}
+                >
+                  Edit Profile
+                </Button>
+                <Button
+                  variant="outline-danger"
+                  className="w-100 mt-3"
+                  onClick={() => logout()}
+                >
+                  Logout
+                </Button>
+              </>
             )}
           </div>
         </Col>

@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { message } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignupForm = () => {
+  const navigate = useNavigate();
+
   const [signUpInfo, setSignUpInfo] = useState({
     firstName: "",
     lastName: "",
@@ -29,6 +31,7 @@ const SignupForm = () => {
         signUpInfo
       );
       message.success(res?.data?.message);
+      navigate("/");
       setSignUpInfo({
         firstName: "",
         lastName: "",
@@ -78,9 +81,6 @@ const SignupForm = () => {
                 value={signUpInfo.email}
                 onChange={handleInputChange}
               />
-              <Form.Text className="text-muted">
-                We'll never share your email with anyone else.
-              </Form.Text>
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">
