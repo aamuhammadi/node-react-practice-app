@@ -11,6 +11,8 @@ const AuthenticationContext = ({ children }) => {
 
   const [userData, setUserData] = useState({});
 
+  console.log(userData);
+
   const fetchUserInfo = async (token) => {
     if (token) {
       try {

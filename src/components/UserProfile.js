@@ -31,6 +31,7 @@ const UserProfile = () => {
           userData
         );
         message.success(res.data.message);
+        setUserData({});
       }
 
       setIsEditing(false);
@@ -91,6 +92,29 @@ const UserProfile = () => {
               <Form.Text className="text-muted">
                 This is your registered email address.
               </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="formBasicPhone">
+              <Form.Label>Phone</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Phone"
+                name="phone"
+                value={userData.phone}
+                readOnly={!isEditing}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicAddress">
+              <Form.Label>Address</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Address"
+                name="address"
+                value={userData.address}
+                readOnly={!isEditing}
+                onChange={handleInputChange}
+              />
             </Form.Group>
 
             {isEditing && (
