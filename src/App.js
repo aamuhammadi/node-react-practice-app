@@ -7,6 +7,7 @@ import UserProfile from "./components/UserProfile";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import { AuthContext } from "./context/auth";
 import setAuthToken from "./utils/setAuthToken";
+import UserList from "./components/Users";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -25,6 +26,7 @@ function App() {
       <Route path="/signup" element={<SignupForm />} />
       <Route element={<ProtectedRoutes />}>
         <Route path="/profile" element={<UserProfile />} />
+        <Route path="/users" element={<UserList />} />
       </Route>
     </Routes>
   );

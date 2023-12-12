@@ -30,12 +30,10 @@ const LoginForm = () => {
         loginInfo
       );
       const token = res.data.token;
-      console.log(res);
       message.success(res?.data?.message);
       setAuthToken(token);
       localStorage.setItem("token", token);
-
-      navigate("/profile");
+      navigate(res?.data?.user?.userType === "admin" ? "/users" : "/profile");
       setLoginInfo({
         email: "",
         password: "",
