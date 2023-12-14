@@ -6,7 +6,7 @@ import { AuthContext } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 
 const UserList = () => {
-  const { userData, fetchUserInfo } = useContext(AuthContext);
+  const { userData, fetchUserInfo, logout } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -73,6 +73,13 @@ const UserList = () => {
                 ))}
               </tbody>
             </Table>
+            <Button
+              variant="outline-danger"
+              className="w-100 mt-3"
+              onClick={() => logout()}
+            >
+              Logout
+            </Button>
           </div>
         </Col>
       </Row>

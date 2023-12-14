@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { message } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import setAuthToken from "../utils/setAuthToken";
+import { AuthContext } from "../context/auth";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+
+  const { userData } = useContext(AuthContext);
 
   const [loginInfo, setLoginInfo] = useState({
     email: "",
@@ -42,6 +45,14 @@ const LoginForm = () => {
       message.error(err?.response?.data?.message);
     }
   };
+
+  const token = localStorage.getItem("token");
+
+  if (token && userData?.email) {
+    return (
+      <Navigate to={userData?.userType === "admin" ? "/users" : "/profile"} />
+    );
+  }
 
   return (
     <Container className="mt-5">

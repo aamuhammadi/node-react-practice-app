@@ -9,6 +9,8 @@ const UserProfile = () => {
   const { userData, setUserData, fetchUserInfo, logout } =
     useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
+  const [image, setImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -25,12 +27,23 @@ const UserProfile = () => {
   const handleSaveClick = async () => {
     try {
       if (isEditing) {
-        // Update user profile
+        const formData = new FormData();
+        formData.append("attachments", image);
+        formData.append("firstName", userData.firstName);
+        formData.append("lastName", userData.lastName);
+        formData.append("email", userData.email);
+        formData.append("phone", userData.phone);
+        formData.append("address", userData.address);
+
         const res = await axios.put(
           "http://localhost:8080/api/user/update",
-          userData
+          formData
         );
+
         message.success(res.data.message);
+        fetchUserInfo(token);
+        setImage(null);
+        setPreviewImage(null);
         setUserData({});
       }
 
@@ -48,12 +61,75 @@ const UserProfile = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const selectedImage = e.target.files[0];
+
+    if (selectedImage) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(selectedImage);
+    }
+
+    setImage(selectedImage);
+  };
+
   return (
     <Container className="mt-5">
       <Row className="justify-content-md-center">
         <Col md={6}>
           <div className="shadow p-4 rounded">
             <h2 className="text-center mb-4">User Profile</h2>
+            <div className="text-center mb-3">
+              {/* Container for the profile image */}
+              <div
+                style={{
+                  width: "150px", // Adjust the width as needed
+                  height: "150px", // Adjust the height as needed
+                  overflow: "hidden",
+                  borderRadius: "50%",
+                  margin: "auto",
+                }}
+              >
+                {userData?.profileImage?.filePath && (
+                  <img
+                    src={`http://localhost:8080/${userData?.profileImage?.filePath}`}
+                    alt="Profile Preview"
+                    className="img-fluid"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+
+            <Form.Group controlId="formBasicImage">
+              <Form.Label>Profile Image</Form.Label>
+              <Form.Control
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                disabled={!isEditing}
+              />
+              {previewImage && (
+                <img
+                  style={{
+                    width: "100px", // Adjust the width as needed
+                    height: "100px", // Adjust the height as needed
+                    overflow: "hidden",
+                    borderRadius: "50%",
+                    margin: "auto",
+                  }}
+                  src={previewImage}
+                  alt="Profile Preview"
+                  className="img-fluid mt-2"
+                />
+              )}
+            </Form.Group>
 
             <Form.Group controlId="formBasicFirstName">
               <Form.Label>First Name</Form.Label>
