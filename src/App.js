@@ -8,6 +8,7 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import { AuthContext } from "./context/auth";
 import setAuthToken from "./utils/setAuthToken";
 import UserList from "./components/Users";
+import AttachmentComponent from "./components/AttachmentComponent";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -27,6 +28,7 @@ function App() {
       <Route element={<ProtectedRoutes />}>
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/users" element={<UserList />} />
+        <Route path="/attachments" element={<AttachmentComponent />} />
       </Route>
     </Routes>
   );

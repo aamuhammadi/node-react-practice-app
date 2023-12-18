@@ -32,8 +32,8 @@ const UserProfile = () => {
         formData.append("firstName", userData.firstName);
         formData.append("lastName", userData.lastName);
         formData.append("email", userData.email);
-        formData.append("phone", userData.phone);
-        formData.append("address", userData.address);
+        formData.append("phone", userData.phone ? userData.phone : "");
+        formData.append("address", userData.address ? userData.address : "");
 
         const res = await axios.put(
           "http://localhost:8080/api/user/update",
@@ -64,6 +64,28 @@ const UserProfile = () => {
   const handleImageChange = (e) => {
     const selectedImage = e.target.files[0];
 
+    // const fileName = selectedImage?.name;
+    // const ext = fileName
+    //   ?.substring(fileName?.lastIndexOf(".") + 1)
+    //   .toLowerCase();
+
+    // const allowedExtensions = [
+    //   "jpg",
+    //   "jpeg",
+    //   "png",
+    //   "gif",
+    //   "JPEG",
+    //   "JPG",
+    //   "PNG",
+    //   "GIF",
+    // ];
+
+    // if (!allowedExtensions.includes(ext)) {
+    //   message.error("Only image files (JPEG, JPG, PNG, GIF) are allowed.");
+    //   e.target.value = null;
+    //   return;
+    // }
+
     if (selectedImage) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -83,54 +105,56 @@ const UserProfile = () => {
             <h2 className="text-center mb-4">User Profile</h2>
             <div className="text-center mb-3">
               {/* Container for the profile image */}
-              <div
-                style={{
-                  width: "150px", // Adjust the width as needed
-                  height: "150px", // Adjust the height as needed
-                  overflow: "hidden",
-                  borderRadius: "50%",
-                  margin: "auto",
-                }}
-              >
-                {userData?.profileImage?.filePath && (
-                  <img
-                    src={`http://localhost:8080/${userData?.profileImage?.filePath}`}
-                    alt="Profile Preview"
-                    className="img-fluid"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                )}
-              </div>
-            </div>
-
-            <Form.Group controlId="formBasicImage">
-              <Form.Label>Profile Image</Form.Label>
-              <Form.Control
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                disabled={!isEditing}
-              />
-              {previewImage && (
-                <img
+              {userData?.profileImage?.filePath && (
+                <div
                   style={{
-                    width: "100px", // Adjust the width as needed
-                    height: "100px", // Adjust the height as needed
+                    width: "150px", // Adjust the width as needed
+                    height: "150px", // Adjust the height as needed
                     overflow: "hidden",
                     borderRadius: "50%",
                     margin: "auto",
                   }}
-                  src={previewImage}
-                  alt="Profile Preview"
-                  className="img-fluid mt-2"
-                />
+                >
+                  {userData?.profileImage?.filePath && (
+                    <img
+                      src={`http://localhost:8080/${userData?.profileImage?.filePath}`}
+                      alt="Profile Preview"
+                      className="img-fluid"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )}
+                </div>
               )}
-            </Form.Group>
-
+            </div>
+            {isEditing && (
+              <Form.Group controlId="formBasicImage">
+                <Form.Label>Profile Image</Form.Label>
+                <Form.Control
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  disabled={!isEditing}
+                />
+                {previewImage && (
+                  <img
+                    style={{
+                      width: "100px", // Adjust the width as needed
+                      height: "100px", // Adjust the height as needed
+                      overflow: "hidden",
+                      borderRadius: "50%",
+                      margin: "auto",
+                    }}
+                    src={previewImage}
+                    alt="Profile Preview"
+                    className="img-fluid mt-2"
+                  />
+                )}
+              </Form.Group>
+            )}
             <Form.Group controlId="formBasicFirstName">
               <Form.Label>First Name</Form.Label>
               <Form.Control
