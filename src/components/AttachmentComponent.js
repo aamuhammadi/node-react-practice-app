@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { message } from "antd";
+import { AuthContext } from "../context/auth";
+import setAuthToken from "../utils/setAuthToken";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { truncateFileName } from "../utils/Helper";
 
 const AttachmentComponent = () => {
+  const token = localStorage.getItem("token");
+
+  const { userData, fetchUserInfo } = useContext(AuthContext);
+
   const [attachments, setAttachments] = useState([]);
 
   const MAX_ATTACHMENTS = 5;
@@ -42,8 +51,47 @@ const AttachmentComponent = () => {
 
       await axios.put("http://localhost:8080/api/user/attachments", formData);
       message.success("Attachments uploaded successfully.");
+      const fileInput = document.getElementById("formBasicAttachment");
+      if (fileInput) {
+        fileInput.value = "";
+      }
+      fetchUserInfo(token);
+      setAttachments([]);
     } catch (err) {
       message.error(err?.response?.data?.error);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      setAuthToken(token);
+      fetchUserInfo(token);
+    }
+  }, []);
+
+  const handleDownloadAttachment = async (fn, fp) => {
+    try {
+      const filepath = fp.replace(/^src\/data\//, "");
+
+      const url = `http://localhost:8080/api/user/download/${filepath}`;
+
+      const res = await axios.get(url, { responseType: "blob" });
+
+      if (res.status !== 200) {
+        message.error(`Error downloading file: ${res.status}`);
+        return;
+      }
+
+      const blob = new Blob([res.data], { type: res.headers["content-type"] });
+      const link = document.createElement("a");
+      link.download = fn;
+      link.href = URL.createObjectURL(blob);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      message.error(err?.response?.data?.message);
+      console.log(err);
     }
   };
 
@@ -66,19 +114,34 @@ const AttachmentComponent = () => {
               </Button>
             </Form.Group>
 
-            {/* {attachment && (
+            {userData?.attachments?.length > 0 && (
               <div>
-                <p>Uploaded Attachment:</p>
-                <p>{attachment.name}</p>
-                <Button
-                  variant="success"
-                  className="w-100 mt-3"
-                  onClick={handleDownload}
-                >
-                  Download
-                </Button>
+                <p>
+                  {userData?.attachments?.length === 1
+                    ? "Uploaded Attachment:"
+                    : "Uploaded Attachments:"}
+                </p>
+                {userData?.attachments?.map((a, i) => (
+                  <div
+                    key={i}
+                    className="d-flex align-items-center justify-content-between"
+                  >
+                    <p className="flex-grow-1 mb-0">
+                      {truncateFileName(a.filename, 25)}
+                    </p>
+                    <Button
+                      variant="success"
+                      className="mt-3"
+                      onClick={() =>
+                        handleDownloadAttachment(a?.filename, a?.filePath)
+                      }
+                    >
+                      <FontAwesomeIcon icon={faDownload} className="mr-2" />
+                    </Button>
+                  </div>
+                ))}
               </div>
-            )} */}
+            )}
           </div>
         </Col>
       </Row>
