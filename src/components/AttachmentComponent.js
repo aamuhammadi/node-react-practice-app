@@ -7,6 +7,7 @@ import setAuthToken from "../utils/setAuthToken";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { truncateFileName } from "../utils/Helper";
+import io from "socket.io-client";
 
 const AttachmentComponent = () => {
   const token = localStorage.getItem("token");
@@ -94,6 +95,22 @@ const AttachmentComponent = () => {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    const socket = io("http://localhost:8080");
+
+    socket.on("userAttachments", (data) => {
+      setAttachments((prevAttachments) => [
+        ...prevAttachments,
+        attachments?.userAttachments,
+      ]);
+      fetchUserInfo(token);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <Container className="mt-5">
